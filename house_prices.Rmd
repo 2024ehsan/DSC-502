@@ -1,0 +1,73 @@
+---
+title: "HW6"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(lubridate)
+```
+
+## QUESTION 1
+
+```{r}
+load("house_prices.rda")
+
+head(house_prices)
+str(house_prices)
+
+house_prices$date <- as.Date(house_prices$date)
+house_prices$year <- year(house_prices$date)
+```
+
+```{r}
+ggplot(house_prices, aes(x = year, y = house_price_index)) +
+  geom_line(color = "blue") +
+  facet_wrap(~ state) +
+  scale_x_continuous(
+    breaks = c(1980, 2000, 2020),
+    labels = c("'80", "'00", "'20")
+  ) +
+  labs(
+    x = "Year",
+    y = "House Price Index",
+    title = "Trend of House Price Index over Years for Each State"
+  ) +
+  theme_minimal()
+```
+
+## QUESTION 2
+
+```{r}
+house_reshaped <- house_prices %>%
+  gather(
+    key = "measure",
+    value = "value",
+    -date, -state, -house_price_perc, -year
+  )
+
+head(house_reshaped)
+str(house_reshaped)
+```
+
+## QUESTION 3
+
+```{r}
+ggplot(house_reshaped, aes(x = year, y = value, color = measure)) +
+  geom_line() +
+  facet_wrap(~ state) +
+  scale_x_continuous(
+    breaks = c(1980, 2000, 2020),
+    labels = c("'80", "'00", "'20")
+  ) +
+  labs(
+    x = "Year",
+    y = "Value",
+    color = "Measure",
+    title = "House Price Index and Unemployment Percentage over Years for Each State"
+  ) +
+  theme_minimal()
+```
+
+Comment "This is not a very good graph for presenting both variables together because house_price_index and unemploy_perc are on very different scales. As a result, the unemployment line may appear too small compared to the house price index line. A better option would be to use separate plots or separate facets for each measure."
